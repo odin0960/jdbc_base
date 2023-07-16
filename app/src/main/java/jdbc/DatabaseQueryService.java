@@ -1,10 +1,8 @@
 package jdbc;
 
-import lombok.Data;
+import jdbc.instances.*;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,38 +17,39 @@ public class DatabaseQueryService {
     public static final String FIND_YOUNGEST_ELDEST_WORKER = "./sql/find_youngest_eldest_worker.sql";
     public static final String PRINT_PROJECT_PRICES = "./sql/print_project_prices.sql";
 
-    Database database = Database.getInstance();
+//    private Database database;
+//    private Statement st;
+//    Database database = Database.getInstance();
+    Statement st = Database.getInstance().getConnection().createStatement();
 
-    List<MaxSalaryWorker> findMaxSalaryWorker() throws IOException, SQLException {
+    public DatabaseQueryService() throws SQLException {
+        // TODO document why this constructor is empty
+    }
 
-//        String sql = String.join("\n", Files.readString(Path.of(FIND_MAX_SALARY_WORKER)));
-        String sql = Files.readString(Path.of(FIND_MAX_SALARY_WORKER));
+//    public <T> List<T> execute(String sql, Class<T> clazz) throws IOException, InterruptedException {
 
-        List<MaxSalaryWorker> listMaxSalaryWorker = new ArrayList<>();
+   public List<MaxSalaryWorker> findMaxSalaryWorker() throws IOException {
 
-        try (Statement st = database.getConnection().createStatement()) {
-            try (ResultSet rs = st.executeQuery(sql)) {
+        List<MaxSalaryWorker> result = new ArrayList<>();
+
+            try (ResultSet rs = st.executeQuery(Utilities.readSqlFromFile(FIND_MAX_SALARY_WORKER))) {
                 while (rs.next()) {
                     MaxSalaryWorker maxSalaryWorker = new MaxSalaryWorker();
                     maxSalaryWorker.setName(rs.getString("name"));
                     maxSalaryWorker.setSalary(rs.getInt("salary"));
-                    listMaxSalaryWorker.add(maxSalaryWorker);
+                    result.add(maxSalaryWorker);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
-        return listMaxSalaryWorker;
+        return result;
     }
 
-    List<MaxProjectCountClient> findMaxProjectsClient() throws IOException, SQLException {
-//        String sql = String.join("\n", Files.readString(Path.of(FIND_MAX_PROJECTS_CLIENT)));
-        String sql = Files.readString(Path.of(FIND_MAX_PROJECTS_CLIENT));
+    List<MaxProjectCountClient> findMaxProjectsClient() throws IOException {
 
         List<MaxProjectCountClient> listMaxProjectsClient = new ArrayList<>();
 
-        try (Statement st = database.getConnection().createStatement()) {
-            try (ResultSet rs = st.executeQuery(sql)) {
+            try (ResultSet rs = st.executeQuery(Utilities.readSqlFromFile(FIND_MAX_PROJECTS_CLIENT))) {
                 while (rs.next()) {
                     MaxProjectCountClient maxProjectsClient = new MaxProjectCountClient();
                     maxProjectsClient.setName(rs.getString("name"));
@@ -60,18 +59,14 @@ public class DatabaseQueryService {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
         return listMaxProjectsClient;
     }
 
-    List<LongestProject> findLongestProject() throws SQLException, IOException {
-//        String sql = String.join("\n", Files.readString(Path.of(FIND_LONGEST_PROJECT)));
-        String sql = Files.readString(Path.of(FIND_LONGEST_PROJECT));
+    List<LongestProject> findLongestProject() throws IOException {
 
         List<LongestProject> listLongestProject = new ArrayList<>();
 
-        try (Statement st = database.getConnection().createStatement()) {
-            try (ResultSet rs = st.executeQuery(sql)) {
+            try (ResultSet rs = st.executeQuery(Utilities.readSqlFromFile(FIND_LONGEST_PROJECT))) {
                 while (rs.next()) {
                     LongestProject longestProject = new LongestProject();
                     longestProject.setName(rs.getString("name"));
@@ -81,18 +76,14 @@ public class DatabaseQueryService {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
         return listLongestProject;
     }
 
-    List<YoungestEldestWorker> findYoungestEldestWorker() throws SQLException, IOException {
-//        String sql = String.join("\n", Files.readString(Path.of(FIND_YOUNGEST_ELDEST_WORKER)));
-        String sql = Files.readString(Path.of(FIND_YOUNGEST_ELDEST_WORKER));
+    List<YoungestEldestWorker> findYoungestEldestWorker() throws IOException {
 
         List<YoungestEldestWorker> listYoungestEldestWorker = new ArrayList<>();
 
-        try (Statement st = database.getConnection().createStatement()) {
-            try (ResultSet rs = st.executeQuery(sql)) {
+            try (ResultSet rs = st.executeQuery(Utilities.readSqlFromFile(FIND_YOUNGEST_ELDEST_WORKER))) {
                 while (rs.next()) {
                     YoungestEldestWorker youngestEldestWorker = new YoungestEldestWorker();
                     youngestEldestWorker.setType(rs.getString("type"));
@@ -103,18 +94,14 @@ public class DatabaseQueryService {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
         return listYoungestEldestWorker;
     }
 
-    List<ProjectPrices> printProjectPrices() throws SQLException, IOException {
-//        String sql = String.join("\n", Files.readString(Path.of(PRINT_PROJECT_PRICES)));
-        String sql = Files.readString(Path.of(PRINT_PROJECT_PRICES));
+    List<ProjectPrices> printProjectPrices() throws IOException {
 
         List<ProjectPrices> listProjectPrices = new ArrayList<>();
 
-        try (Statement st = database.getConnection().createStatement()) {
-            try (ResultSet rs = st.executeQuery(sql)) {
+            try (ResultSet rs = st.executeQuery(Utilities.readSqlFromFile(PRINT_PROJECT_PRICES))) {
                 while (rs.next()) {
                     ProjectPrices projectPrices = new ProjectPrices();
                     projectPrices.setName(rs.getString("name"));
@@ -124,42 +111,12 @@ public class DatabaseQueryService {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
         return listProjectPrices;
     }
 
-    @Data
-    public class MaxSalaryWorker {
-        private String name;
-        private int salary;
-    }
+    public static void main(String[] args) throws IOException, SQLException {
+//        Database database = Database.getInstance();
 
-    @Data
-    public class MaxProjectCountClient {
-        private String name;
-        private int projectCount;
-    }
-
-    @Data
-    public class LongestProject {
-        private String name;
-        private int monthCount;
-    }
-
-    @Data
-    public class YoungestEldestWorker {
-        private String type;
-        private String name;
-        private String birthday;
-    }
-
-    @Data
-    public class ProjectPrices {
-        private String name;
-        private int price;
-    }
-
-    public static void main(String[] args) throws SQLException, IOException {
         List<MaxSalaryWorker> maxSalaryWorker = new DatabaseQueryService().findMaxSalaryWorker();
         List<MaxProjectCountClient> maxProjectCountClients = new DatabaseQueryService().findMaxProjectsClient();
         List<LongestProject> longestProject = new DatabaseQueryService().findLongestProject();
