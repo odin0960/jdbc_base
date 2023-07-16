@@ -23,7 +23,6 @@ public class DatabaseQueryService {
     Statement st = Database.getInstance().getConnection().createStatement();
 
     public DatabaseQueryService() throws SQLException {
-        // TODO document why this constructor is empty
     }
 
 //    public <T> List<T> execute(String sql, Class<T> clazz) throws IOException, InterruptedException {
