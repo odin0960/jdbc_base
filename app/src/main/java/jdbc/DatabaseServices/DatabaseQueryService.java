@@ -1,5 +1,7 @@
-package jdbc;
+package jdbc.DatabaseServices;
 
+import jdbc.Database;
+import jdbc.Utilities;
 import jdbc.instances.*;
 
 import java.io.IOException;
